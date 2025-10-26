@@ -29,9 +29,9 @@ set_sig_handler 'ALRM', sub {
     my $x = find_proc( name => $XTRLOCK_BIN );
     if ( !@{$x} ) {
         my $idle;
-        run [$xprintidle], sub { }, \$idle, sub { };
+        run [$xprintidle], \&_do_nothing, \$idle, \&_do_nothing;
         if ( $idle >= $timeout ) {
-            run [ $xtrlock, '-f' ], sub { }, sub { }, sub { };
+            run [ $xtrlock, '-f' ], \&_do_nothing, \&_do_nothing, \&_do_nothing;
         }
     }
     return alarm 60;
@@ -42,12 +42,18 @@ set_sig_handler 'TERM', \&_unlock;
 set_sig_handler 'QUIT', \&_unlock;
 set_sig_handler 'USR1', \&_unlock;
 set_sig_handler 'USR2', \&_unlock;
-alarm 1;
+alarm 0;
 
 while (1) {
     sleep 60;
 }
 _unlock();
+
+# ------------------------------------------------------------------------------
+sub _do_nothing
+{
+    return;
+}
 
 # ------------------------------------------------------------------------------
 sub _unlock
