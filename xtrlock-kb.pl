@@ -15,7 +15,6 @@ our $VERSION = 'v1.0';
 my $timeout = $ARGV[0];
 _usage() if ( !defined $timeout || $timeout !~ /^\d+$/sm || $timeout < 1 );
 
-const my $DEBUG          => 1;
 const my $XPRINTIDLE_EXE => 'xprintidle';
 const my $XTRLOCK_EXE    => 'xtrlock';
 my $xprintidle = which($XPRINTIDLE_EXE);
@@ -33,9 +32,7 @@ set_sig_handler 'ALRM', sub {
         my $idle;
         run [$xprintidle], \&_do_nothing, \$idle, \&_do_nothing;
         $idle =~ s/^\s+|\s+$//gsm;
-        $DEBUG and printf "No %s, [%s / %s]\n", $XTRLOCK_EXE, $idle, $timeout;
         if ( $idle >= $timeout ) {
-            $DEBUG and printf "Run '%s -f'...\n", $xtrlock;
             run [ $xtrlock, '-f' ], \&_do_nothing, \&_do_nothing, \&_do_nothing;
         }
     }
