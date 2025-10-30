@@ -5,11 +5,11 @@ use Modern::Perl;
 use Const::Fast;
 use English qw/-no_match_vars/;
 use File::Which;
-use IPC::Run       qw/run/;
+use IPC::Run       qw/run timeout/;
 use Proc::Find     qw/find_proc/;
 use Sys::SigAction qw/set_sig_handler/;
 
-our $VERSION = 'v1.0';
+our $VERSION = 'v1.1';
 
 # ------------------------------------------------------------------------------
 my $timeout = $ARGV[0];
@@ -18,6 +18,7 @@ _usage() if ( !defined $timeout || $timeout !~ /^\d+$/sm || $timeout < 1 );
 const my @TERMSIG        => qw/INT HUP TERM QUIT USR1 USR2 PIPE ABRT BUS FPE ILL SEGV SYS TRAP/;
 const my $XPRINTIDLE_EXE => 'xprintidle';
 const my $XTRLOCK_EXE    => 'xtrlock';
+const my $RUN_TIMEOUT    => 10;
 my $xprintidle = which($XPRINTIDLE_EXE);
 $xprintidle or _no_exe($XPRINTIDLE_EXE);
 my $xtrlock = which($XTRLOCK_EXE);
@@ -31,10 +32,10 @@ set_sig_handler 'ALRM', sub {
     my $x = find_proc( name => $XTRLOCK_EXE );
     if ( @{$x} == 0 ) {
         my $idle;
-        run [$xprintidle], \&_do_nothing, \$idle, \&_do_nothing;
+        run [$xprintidle], \&_do_nothing, \$idle, \&_do_nothing, timeout($RUN_TIMEOUT);
         $idle =~ s/^\s+|\s+$//gsm;
         if ( $idle >= $timeout ) {
-            run [ $xtrlock, '-f' ], \&_do_nothing, \&_do_nothing, \&_do_nothing;
+            run [ $xtrlock, '-f' ], \&_do_nothing, \&_do_nothing, \&_do_nothing, timeout($RUN_TIMEOUT);
         }
     }
     return alarm 60;
