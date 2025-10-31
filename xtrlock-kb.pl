@@ -14,6 +14,8 @@ our $VERSION = 'v1.1';
 my $timeout = $ARGV[0];
 _usage() if ( !defined $timeout || $timeout !~ /^\d+$/sm || $timeout < 1 );
 
+const my $SEC_IN_MIN     => 60;
+const my $MILLISEC       => 1000;
 const my @TERMSIG        => qw/INT HUP TERM QUIT USR1 USR2 PIPE ABRT BUS FPE ILL SEGV SYS TRAP/;
 const my $XPRINTIDLE_EXE => 'xprintidle';
 const my $XTRLOCK_EXE    => 'xtrlock';
@@ -23,7 +25,7 @@ my $xtrlock = which($XTRLOCK_EXE);
 $xtrlock or _no_exe($XTRLOCK_EXE);
 
 # ------------------------------------------------------------------------------
-$timeout *= ( 60 * 1000 );
+$timeout *= ( $SEC_IN_MIN * $MILLISEC );
 
 set_sig_handler 'ALRM', sub {
 
@@ -37,13 +39,13 @@ set_sig_handler 'ALRM', sub {
         }
     }
 
-    return alarm 60;
+    return alarm $SEC_IN_MIN;
 };
 set_sig_handler $_, \&_unlock for @TERMSIG;
 alarm 1;
 
 while (1) {
-    sleep 60;
+    sleep $SEC_IN_MIN;
 }
 _unlock();
 
