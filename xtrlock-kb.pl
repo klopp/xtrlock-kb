@@ -15,7 +15,7 @@ my $timeout = $ARGV[0];
 _usage() if ( !defined $timeout || $timeout !~ /^\d+$/sm || $timeout < 1 );
 
 const my $SEC_IN_MIN     => 60;
-const my $MILLISEC       => 1000;
+const my $MILLISEC       => 1_000;
 const my @TERMSIG        => qw/INT HUP TERM QUIT USR1 USR2 PIPE ABRT BUS FPE ILL SEGV SYS TRAP/;
 const my $XPRINTIDLE_EXE => 'xprintidle';
 const my $XTRLOCK_EXE    => 'xtrlock';
