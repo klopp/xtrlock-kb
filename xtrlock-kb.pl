@@ -14,6 +14,19 @@ our $VERSION = 'v1.1';
 my $timeout = $ARGV[0];
 _usage() if ( !defined $timeout || $timeout !~ /^\d+$/sm || $timeout < 1 );
 
+my @xargs = ('-f');
+if ( @ARGV == 2 ) {
+    if ( $ARGV[1] eq '-b' ) {
+        push @xargs, '-b';
+    }
+    else {
+        _usage();
+    }
+}
+elsif ( @ARGV > 2 ) {
+    _usage();
+}
+
 const my $SEC_IN_MIN     => 60;
 const my $MILLISEC       => 1_000;
 const my @TERMSIG        => qw/INT HUP TERM QUIT USR1 USR2 PIPE ABRT BUS FPE ILL SEGV SYS TRAP/;
@@ -35,7 +48,7 @@ set_sig_handler 'ALRM', sub {
         run [$xprintidle], \&_do_nothing, \$idle, \&_do_nothing;
         $idle =~ s/^\s+|\s+$//gsm;
         if ( $idle >= $timeout ) {
-            run [ $xtrlock, '-f' ], \&_do_nothing, \&_do_nothing, \&_do_nothing;
+            run [ $xtrlock, @xargs ], \&_do_nothing, \&_do_nothing, \&_do_nothing;
         }
     }
 
@@ -74,7 +87,7 @@ sub _no_exe
 # ------------------------------------------------------------------------------
 sub _usage
 {
-    printf "Usage: %s timeout ( >= 1 minute )\n", $PROGRAM_NAME;
+    printf "Usage: %s minutes [-b]\n", $PROGRAM_NAME;
     return exit 1;
 }
 
