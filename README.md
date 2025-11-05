@@ -5,7 +5,7 @@ Perl-based wrapper for [xtrlock](https://packages.debian.org/sid/xtrlock).
 
 ```bash
 
-xtrlock.pl MINUTES 
+xtrlock.pl MINUTES [-b]
 
 ```
 
