@@ -87,7 +87,7 @@ sub _no_exe
 # ------------------------------------------------------------------------------
 sub _usage
 {
-    printf "Usage: %s options:\n  -t=minutes (timeout)\n  -b (blank screen)\n", $PROGRAM_NAME;
+    printf "Usage: %s options:\n  -t=minutes (timeout)\n  -b (blank screen after lock)\n", $PROGRAM_NAME;
     return exit 1;
 }
 

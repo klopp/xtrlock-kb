@@ -6,7 +6,7 @@ Perl-based wrapper for [xtrlock](https://packages.debian.org/sid/xtrlock).
 ```text
 Usage: ./xtrlock-kb.pl options:
   -t=minutes (timeout)
-  -b (blank screen)
+  -b (blank screen after lock)
 
 ```
 
