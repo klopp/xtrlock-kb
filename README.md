@@ -3,9 +3,10 @@ Perl-based wrapper for [xtrlock](https://packages.debian.org/sid/xtrlock).
 
 ## Usage
 
-```bash
-
-xtrlock.pl MINUTES [-b]
+```text
+Usage: ./xtrlock-kb.pl options:
+  -t=minutes (timeout)
+  -b (blank screen)
 
 ```
 
