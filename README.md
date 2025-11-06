@@ -10,3 +10,7 @@ Usage: ./xtrlock-kb.pl options:
 
 ```
 
+## See also
+
+* [man xprintidle](https://manpages.org/xprintidle)
+* [man xtrlock](https://manpages.org/xtrlock)
