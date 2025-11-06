@@ -8,24 +8,24 @@ use File::Which;
 use IPC::Run       qw/run/;
 use Proc::Find     qw/find_proc/;
 use Sys::SigAction qw/set_sig_handler/;
-our $VERSION = 'v1.1';
+our $VERSION = 'v1.3';
 
 # ------------------------------------------------------------------------------
-my $timeout = $ARGV[0];
-_usage() if ( !defined $timeout || $timeout !~ /^\d+$/sm || $timeout < 1 );
-
 my @xargs = ('-f');
-if ( @ARGV == 2 ) {
-    if ( $ARGV[1] eq '-b' ) {
+my $timeout;
+
+for (@ARGV) {
+    if (/^-t=(\d+)$/sm) {
+        $timeout = $1;
+    }
+    elsif ( $_ eq '-b' ) {
         push @xargs, '-b';
     }
     else {
         _usage();
     }
 }
-elsif ( @ARGV > 2 ) {
-    _usage();
-}
+$timeout or _usage();
 
 const my $SEC_IN_MIN     => 60;
 const my $MILLISEC       => 1_000;
@@ -87,7 +87,7 @@ sub _no_exe
 # ------------------------------------------------------------------------------
 sub _usage
 {
-    printf "Usage: %s minutes [-b]\n", $PROGRAM_NAME;
+    printf "Usage: %s options:\n  -t=minutes (timeout)\n  -b (blank screen)\n", $PROGRAM_NAME;
     return exit 1;
 }
 
