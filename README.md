@@ -1,10 +1,10 @@
-# xtrlock-kb
-Perl-based wrapper for [xtrlock](https://packages.debian.org/sid/xtrlock).
+# xtrlock-to
+Wrapper for [xtrlock](https://packages.debian.org/sid/xtrlock).
 
 ## Usage
 
 ```text
-Usage: ./xtrlock-kb.pl options:
+Usage: ./xtrlock-to.pl options:
   -t=minutes (timeout)
   -b (blank screen after lock)
 
