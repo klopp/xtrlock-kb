@@ -8,7 +8,7 @@ use File::Which;
 use IPC::Run       qw/run/;
 use Proc::Find     qw/find_proc/;
 use Sys::SigAction qw/set_sig_handler/;
-our $VERSION = 'v1.2';
+our $VERSION = 'v1.3';
 
 # ------------------------------------------------------------------------------
 my @xargs = ('-f');
