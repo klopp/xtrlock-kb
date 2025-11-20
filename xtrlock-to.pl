@@ -3,17 +3,27 @@
 # ------------------------------------------------------------------------------
 use Modern::Perl;
 use Const::Fast;
+use Daemon::Daemonize;
 use English qw/-no_match_vars/;
 use File::Which;
+use Getopt::Long;
 use IPC::Run       qw/run/;
 use Proc::Find     qw/find_proc/;
 use Sys::SigAction qw/set_sig_handler/;
-our $VERSION = 'v1.3';
+our $VERSION = 'v1.4';
 
 # ------------------------------------------------------------------------------
 my @xargs = ('-f');
-my $timeout;
+my ( $opt_b, $timeout, $daemonize );
 
+GetOptions(
+    't=i' => \$timeout,
+    'b'   => \$opt_b,
+    'd'   => \$daemonize,
+) or _usage();
+$opt_b and push @xargs, '-b';
+
+=pod
 for (@ARGV) {
     if (/^-t=(\d+)$/sm) {
         $timeout = $1;
@@ -25,6 +35,8 @@ for (@ARGV) {
         _usage();
     }
 }
+=cut
+
 $timeout or _usage();
 
 const my $SEC_IN_MIN     => 60;
@@ -40,8 +52,20 @@ $xtrlock or _no_exe($XTRLOCK_EXE);
 # ------------------------------------------------------------------------------
 $timeout *= ( $SEC_IN_MIN * $MILLISEC );
 
-set_sig_handler 'ALRM', sub {
+$daemonize and Daemon::Daemonize->daemonize();
 
+set_sig_handler 'ALRM', \&_alarm;
+set_sig_handler $_,     \&_unlock for @TERMSIG;
+alarm 1;
+
+while (1) {
+    sleep $SEC_IN_MIN;
+}
+_unlock();
+
+# ------------------------------------------------------------------------------
+sub _alarm
+{
     my $x = find_proc( name => $XTRLOCK_EXE );
     if ( @{$x} == 0 ) {
         my $idle;
@@ -53,14 +77,7 @@ set_sig_handler 'ALRM', sub {
     }
 
     return alarm $SEC_IN_MIN;
-};
-set_sig_handler $_, \&_unlock for @TERMSIG;
-alarm 1;
-
-while (1) {
-    sleep $SEC_IN_MIN;
 }
-_unlock();
 
 # ------------------------------------------------------------------------------
 sub _do_nothing
@@ -87,7 +104,9 @@ sub _no_exe
 # ------------------------------------------------------------------------------
 sub _usage
 {
-    printf "Usage: %s options:\n  -t=minutes (timeout)\n  -b (blank screen after lock)\n", $PROGRAM_NAME;
+    printf
+        "Usage: %s options:\n  -t=minutes (timeout)\n  -b (blank screen after lock)\n  -d (run as daemon)\n",
+        $PROGRAM_NAME;
     return exit 1;
 }
 
