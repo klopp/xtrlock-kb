@@ -23,20 +23,6 @@ GetOptions(
 ) or _usage();
 $opt_b and push @xargs, '-b';
 
-=pod
-for (@ARGV) {
-    if (/^-t=(\d+)$/sm) {
-        $timeout = $1;
-    }
-    elsif ( $_ eq '-b' ) {
-        push @xargs, '-b';
-    }
-    else {
-        _usage();
-    }
-}
-=cut
-
 $timeout or _usage();
 
 const my $SEC_IN_MIN     => 60;
